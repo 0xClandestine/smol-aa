@@ -7,15 +7,14 @@
 [license]: https://opensource.org/license/unlicense
 [license-badge]: https://img.shields.io/badge/License-Unlicense-blue.svg
 
-For guidance, refer to the [Foundry Documentation](https://book.getfoundry.sh/).
+Smol AA is a minimal viable smart account designed to offer versatile functionality including:
 
+1. **Arbitrary and Mutable Ownership**: Provides flexibility in ownership management, allowing for changes as needed.
+
+2. **Arbitrary Calls/Delegatecalls**: Supports executing arbitrary calls and delegatecalls, enabling similar functionalities akin to [EIP-3074](https://eips.ethereum.org/EIPS/eip-3074).
 ## Usage
 
-To incorporate this template into your own project, use the following command:
-
-```shell
-forge init <project> --template 0xClandestine/smol-aa
-```
+For guidance, refer to the [Foundry Documentation](https://book.getfoundry.sh/).
 
 ### Build
 
