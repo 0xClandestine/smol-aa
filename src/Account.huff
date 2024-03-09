@@ -1,0 +1,82 @@
+#define constant REVERT_OFFSET = 0x31
+#define constant DELEGATE_OFFSET = 0x27
+
+#define macro CONSTRUCTOR() = takes (0) returns (0) {
+    // Copy code to memory.
+    push1 0x52         // [82]
+    push1 0x0e         // [14, 82]
+    returndatasize     // [0, 14, 82]
+    codecopy           // []
+
+    // Set caller as owner.
+    push1 0x32         // [50]
+    dup1               // [50, 50]
+    mload              // [addr, 50]
+    dup1               // [addr, addr, 50]
+    sstore             // [50]
+
+    // Return runtime code.
+    returndatasize     // [0, 50]
+    return             // []
+}
+
+#define macro MAIN() = takes (0) returns (0) {
+    // Revert if caller is not owner.
+    caller             // [caller]
+    sload              // [isCallerOwner]
+    iszero             // [!isCallerOwner]
+    [REVERT_OFFSET]    // [revertDst, !isCallerOwner]
+    jumpi              // []
+    
+    // Push zeros for later use...
+    returndatasize     // [0]
+    returndatasize     // [0, 0]
+    returndatasize     // [0, 0, 0]
+    returndatasize     // [0, 0, 0, 0]
+
+    // calldatacopy(0, 96, sub(cds, 96))
+    push1 0x60         // [96, 0, 0, 0, 0]
+    dup1               // [96, 96, 0, 0, 0, 0]
+    dup1               // [96, 96, 96, 0, 0, 0, 0]
+    calldatasize       // [cds, 96, 96, 96, 0, 0, 0, 0]
+    sub                // [sub(cds, 96), 96, 96, 0, 0, 0, 0]
+    swap1              // [96, sub(cds, 96), 96, 0, 0, 0, 0]
+    returndatasize     // [0, 96, sub(cds, 96), 96, 0, 0, 0, 0]
+    calldatacopy       // [96, 0, 0, 0, 0]
+
+    // call(gas, addr, value, 0, sub(cds, 96), 0, 0)
+    // delegatecall(gas, addr, 0, sub(cds, 96), 0, 0)
+    calldatasize       // [cds, 96, 0, 0, 0, 0]
+    sub                // [sub(cds, 96), 0, 0, 0, 0]
+    returndatasize     // [0, sub(cds, 96), 0, 0, 0, 0]
+    push1 0x40         // [64, 0, sub(cds, 96), 0, 0, 0, 0]
+    calldataload       // [value, 0, sub(cds, 96), 0, 0, 0, 0]
+    push1 0x20         // [32, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    calldataload       // [target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    gas                // [gas, target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    returndatasize     // [0, gas, target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    calldataload       // [delegate, gas, target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    [DELEGATE_OFFSET]  // [delegateDst, delegate, gas, target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    jumpi              // [gas, target, value, 0, sub(cds, 96), 0, 0, 0, 0]
+    call               // [success, 0, 0]
+    
+    iszero             // [!success, 0, 0]
+    [REVERT_OFFSET]    // [revertDst, !success, 0, 0]
+    jumpi              // [0, 0]
+    return             // []
+
+    // delegateDst:
+    swap2              // [value, target, gas, 0, sub(cds, 96), 0, 0, 0, 0]
+    pop                // [target, gas, 0, sub(cds, 96), 0, 0, 0, 0]
+    swap1              // [gas, target, 0, sub(cds, 96), 0, 0, 0, 0]
+    delegatecall       // [success, 0, 0]
+        
+    // success ? return : revert
+    iszero             // [!success, 0, 0]
+    [REVERT_OFFSET]    // [revertDst, !success, 0, 0]
+    jumpi              // [0, 0]
+    return             // []
+
+    // revertDst:
+    revert             // []
+}

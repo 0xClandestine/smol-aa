@@ -1,0 +1,27 @@
+[profile.default]
+  evm_version = "paris"
+  solc_version = "0.8.23"
+  verbosity = 3
+  ffi = true
+  fs_permissions = [{ access = "read-write", path = "./"}]
+
+[profile.ci]
+  fuzz = { runs = 5000 }
+  invariant = { runs = 1000 }
+
+[profile.lite]
+  fuzz = { runs = 50 }
+  invariant = { runs = 10 }
+
+[fmt]
+  bracket_spacing = true
+  int_types = "long"
+  line_length = 100
+  multiline_func_header = "attributes_first"
+  number_underscore = "thousands"
+  quote_style = "double"
+  single_line_statement_blocks = "single"
+  tab_width = 4
+  wrap_comments = true
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
