@@ -1,7 +1,7 @@
 # Smol AA [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
 
 [gha]: https://github.com/0xClandestine/smol-aa/actions
-[gha-badge]: https://github.com/0xClandestine/smol-aa/actions/workflows/ci.yml/badge.svg
+[gha-badge]: https://github.com/0xClandestine/smol-aa/actions/workflows/test.yml/badge.svg
 [foundry]: https://getfoundry.sh/
 [foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
 [license]: https://opensource.org/license/unlicense
