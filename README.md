@@ -1,7 +1,7 @@
 # Smol AA [![Github Actions][gha-badge]][gha] [![Foundry][foundry-badge]][foundry] [![License: MIT][license-badge]][license]
 
-[gha]: https://github.com/PaulRBerg/foundry-template/actions
-[gha-badge]: https://github.com/PaulRBerg/foundry-template/actions/workflows/ci.yml/badge.svg
+[gha]: https://github.com/0xClandestine/smol-aa/actions
+[gha-badge]: https://github.com/0xClandestine/smol-aa/actions/workflows/ci.yml/badge.svg
 [foundry]: https://getfoundry.sh/
 [foundry-badge]: https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg
 [license]: https://opensource.org/license/unlicense
@@ -14,7 +14,7 @@ For guidance, refer to the [Foundry Documentation](https://book.getfoundry.sh/).
 To incorporate this template into your own project, use the following command:
 
 ```shell
-forge init <project> --template 0xClandestine/foundry-template
+forge init <project> --template 0xClandestine/smol-aa
 ```
 
 ### Build
@@ -39,7 +39,7 @@ forge fmt
 
 ```shell
 source .env
-forge script DeployCounter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_KEY
+forge script DeploySocialRecovery --rpc-url $RPC_URL --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_KEY
 ```
 
 ### License
