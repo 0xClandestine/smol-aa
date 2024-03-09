@@ -6,37 +6,50 @@ import { HuffDeployer } from "foundry-huff/HuffDeployer.sol";
 
 contract AccountTest is Test {
     address account;
-    bool flagged;
+    uint256 number;
 
-    function test_Account() public virtual {
-        vm.label(address(this), "AccountTest");
-
+    function setUp() public virtual {
         account = HuffDeployer.deploy_with_args("Account", abi.encode(address(this)));
-
         vm.label(account, "Account");
-
-        assertEq(
-            vm.load(account, bytes32(uint256(uint160(address(this))))),
-            bytes32(uint256(uint160(address(this))))
-        );
-
-        vm.deal(account, 1 ether);
-
-        account.call(
-            abi.encodePacked(
-                abi.encode(0),
-                abi.encode(address(this)),
-                abi.encode(uint256(1 ether)),
-                this.flag.selector
-            )
-        );
-
-        assertTrue(flagged);
+        vm.label(address(this), "AccountTest");
     }
 
-    function flag() public payable virtual {
-        flagged = true;
+    function add(uint256 a, uint256 b) public payable virtual {
+        number = a + b;
     }
 
     receive() external payable virtual { }
+}
+
+contract AccountCallTest is AccountTest {
+    function test_AccessControl(address notOwner) public virtual {
+        if (msg.sender != address(this)) {
+            bytes memory header = abi.encode(0, address(this), 0);
+            bytes memory data =
+                abi.encodePacked(header, this.add.selector, uint256(420), uint256(69));
+            vm.prank(notOwner);
+            (bool s,) = account.call(data);
+            assertTrue(!s);
+        }
+    }
+
+    function test_Correctness(uint256 value, uint256 a, uint256 b) public virtual {
+        value %= type(uint96).max;
+        a %= type(uint96).max;
+        b %= type(uint96).max;
+
+        bytes32 addressThisBytes32 = bytes32(uint256(uint160(address(this))));
+        assertEq(vm.load(account, addressThisBytes32), addressThisBytes32);
+
+        vm.deal(address(this), 0);
+        vm.deal(account, value);
+
+        bytes memory header = abi.encode(0, address(this), value);
+        bytes memory data = abi.encodePacked(header, this.add.selector, a, b);
+        (bool s,) = account.call(data);
+
+        assertTrue(s);
+        assertEq(number, a + b);
+        assertEq(address(this).balance, value);
+    }
 }
